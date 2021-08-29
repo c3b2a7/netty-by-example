@@ -1,7 +1,7 @@
 package me.lolico.sample.netty.handler;
 
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import me.lolico.sample.netty.server.Server;
+import me.lolico.sample.netty.transport.Server;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter {
 

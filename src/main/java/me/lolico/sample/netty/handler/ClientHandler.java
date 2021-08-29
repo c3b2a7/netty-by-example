@@ -1,7 +1,7 @@
 package me.lolico.sample.netty.handler;
 
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import me.lolico.sample.netty.client.Client;
+import me.lolico.sample.netty.transport.Client;
 
 public class ClientHandler extends ChannelInboundHandlerAdapter {
     private final Client client;

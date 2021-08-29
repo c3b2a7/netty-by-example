@@ -1,4 +1,4 @@
-package me.lolico.sample.netty.client;
+package me.lolico.sample.netty.transport;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
@@ -52,6 +52,17 @@ public class NettyClient implements Client {
                     }
                 });
         doConnect();
+    }
+
+    @Override
+    public void close() throws Throwable {
+        if (channel != null) {
+            channel.close();
+        }
+        if (eventLoopGroup != null) {
+            eventLoopGroup.shutdownGracefully();
+        }
+        bootstrap = null;
     }
 
     private void doConnect() {

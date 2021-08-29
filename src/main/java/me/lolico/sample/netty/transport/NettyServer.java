@@ -1,4 +1,4 @@
-package me.lolico.sample.netty.server;
+package me.lolico.sample.netty.transport;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
