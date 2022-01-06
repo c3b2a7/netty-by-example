@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package me.lolico.sample.netty.proto;
+
+option optimize_for = SPEED;
+option java_multiple_files = true;
+option java_outer_classname = "MessageProto";
+
+message Request{
+  enum Type{
+    NORMAL = 0;
+    PING = 1;
+    PONG = 2;
+  }
+  int64 id = 1;
+  Type type = 2;
+  bytes data = 3;
+}
+
+message Response{
+  enum Status{
+    OK = 0;
+    ERROR = 1;
+  }
+  int64 id = 1;
+  Status status = 2;
+  bytes data = 3;
+}
