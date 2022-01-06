@@ -1,9 +1,11 @@
 package me.lolico.sample.netty.listener;
 
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.group.ChannelGroup;
 
+@ChannelHandler.Sharable
 public class ChannelGroupListener extends ChannelInboundHandlerAdapter {
 
     private final ChannelGroup channels;
