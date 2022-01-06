@@ -30,7 +30,7 @@ public class NettyClient implements Client {
     }
 
     @Override
-    public void open() {
+    public void open() throws Exception {
         bootstrap = new Bootstrap();
         ClassResolver classResolver = ClassResolvers.softCachingResolver(null);
         eventLoopGroup = NettyEventLoopFactory.eventLoopGroup(1, "NettyClientEventLoopGroup", false);
@@ -48,14 +48,14 @@ public class NettyClient implements Client {
                                 }))
                                 .addLast("decoder", new ObjectDecoder(classResolver))
                                 .addLast("encoder", new ObjectEncoder())
-                                .addLast("handler", new ClientHandler(NettyClient.this));
+                                .addLast("handler", new ClientHandler(NettyClient.this){});
                     }
                 });
         doConnect();
     }
 
     @Override
-    public void close() throws Throwable {
+    public void close() throws Exception {
         if (channel != null) {
             channel.close();
         }

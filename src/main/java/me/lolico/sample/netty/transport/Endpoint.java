@@ -1,12 +1,27 @@
 package me.lolico.sample.netty.transport;
 
+import io.netty.channel.Channel;
+
 import java.net.SocketAddress;
 
 public interface Endpoint {
 
-    void open() throws Throwable;
+    /**
+     * Open this endpoint
+     */
+    void open() throws Exception;
 
-    void close() throws Throwable;
+    /**
+     * Close this endpoint
+     */
+    void close() throws Exception;
+
+    /**
+     * Get the channel connected to the endpoint
+     *
+     * @return channel
+     */
+    Channel getChannel();
 
     static Server bind(SocketAddress socketAddress) {
         return new NettyServer(socketAddress);

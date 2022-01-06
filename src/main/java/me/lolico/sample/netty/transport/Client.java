@@ -4,8 +4,16 @@ import io.netty.channel.Channel;
 
 public interface Client extends Endpoint {
 
-    void reconnect();
+    /**
+     * Reconnect server
+     */
+    void reconnect() throws Exception;
 
+    /**
+     * Get the channel connected to the server
+     *
+     * @return channel
+     */
     Channel getChannel();
 
 }

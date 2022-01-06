@@ -36,7 +36,7 @@ public class NettyServer implements Server {
     }
 
     @Override
-    public void open() throws Throwable {
+    public void open() throws Exception {
         channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
         ClassResolver classResolver = ClassResolvers.softCachingResolver(null);
         bootstrap = new ServerBootstrap();
@@ -56,7 +56,7 @@ public class NettyServer implements Server {
                                 .addLast(new ChannelGroupListener(channels))
                                 .addLast("decoder", new ObjectDecoder(classResolver))
                                 .addLast("encoder", new ObjectEncoder())
-                                .addLast("handler", new ServerHandler(NettyServer.this));
+                                .addLast("handler", new ServerHandler(NettyServer.this){});
                     }
                 });
         ChannelFuture channelFuture = bootstrap.bind(socketAddress).syncUninterruptibly();
@@ -71,7 +71,7 @@ public class NettyServer implements Server {
     }
 
     @Override
-    public void close() throws Throwable {
+    public void close() throws Exception {
         if (channel != null) {
             channel.close();
         }

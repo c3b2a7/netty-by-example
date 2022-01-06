@@ -13,10 +13,16 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 
+/**
+ * A watchdog used to perform some actions when an event is triggered.
+ *
+ * @see ReconnectionListener
+ */
 public class WatchdogHandler extends ChannelInboundHandlerAdapter {
 
     private static final Logger log = LoggerFactory.getLogger(WatchdogHandler.class);
-    private static final ByteBuf HEARTBEAT = Unpooled.unreleasableBuffer(Unpooled.copiedBuffer("heartbeat".getBytes(StandardCharsets.UTF_8)));
+    private static final ByteBuf HEARTBEAT = Unpooled.unreleasableBuffer(
+            Unpooled.copiedBuffer("heartbeat".getBytes(StandardCharsets.UTF_8)));
 
     private int attempts = 0;
     private final ReconnectionListener reconnectionListener;
