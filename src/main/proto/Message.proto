@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package me.lolico.sample.netty.proto;
+package me.lolico.example.netty.proto;
 
 option optimize_for = SPEED;
 option java_multiple_files = true;
