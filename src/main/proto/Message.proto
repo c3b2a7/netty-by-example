@@ -1,13 +1,12 @@
 syntax = "proto3";
 
-package me.lolico.example.netty.proto;
-
 option optimize_for = SPEED;
-option java_multiple_files = true;
+option java_multiple_files = false;
+option java_package = "me.lolico.example.proto";
 option java_outer_classname = "MessageProto";
 
-message Request{
-  enum Type{
+message Request {
+  enum Type {
     NORMAL = 0;
     PING = 1;
     PONG = 2;
