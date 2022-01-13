@@ -1,14 +1,8 @@
 package me.lolico.example.netty.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-
 import java.util.concurrent.atomic.AtomicLong;
 
-@Data
-@Builder
-@AllArgsConstructor
+
 public class Request {
 
     public static final byte NORMAL = 1;
@@ -21,4 +15,32 @@ public class Request {
     private byte type = NORMAL;
     private Object data;
 
+    public Request(Object data) {
+        this.data = data;
+    }
+
+    public Request(byte type, Object data) {
+        this.type = type;
+        this.data = data;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public byte getType() {
+        return type;
+    }
+
+    public void setType(byte type) {
+        this.type = type;
+    }
+
+    public Object getData() {
+        return data;
+    }
+
+    public void setData(Object data) {
+        this.data = data;
+    }
 }
