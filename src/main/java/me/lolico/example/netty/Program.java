@@ -10,10 +10,12 @@ public class Program {
     public static void main(String[] args) throws Throwable {
         String type = args[0];
         Supplier<SocketAddress> supplier = () -> new InetSocketAddress(args[1], Integer.parseInt(args[2]));
-        if ("--connect".equals(type)) {
-            Endpoint.connect(supplier.get()).open();
-        } else if ("--bind".equals(type)) {
-            Endpoint.bind(supplier.get()).open();
-        }
+        Endpoint endpoint = switch (type) {
+            case "-c", "--connect" -> Endpoint.connect(supplier.get());
+            case "-b", "--bind" -> Endpoint.bind(supplier.get());
+            case "-tp", "--transparentProxy" -> Endpoint.transparentProxy(supplier.get());
+            default -> throw new IllegalStateException("Unexpected value: " + type);
+        };
+        endpoint.open();
     }
 }

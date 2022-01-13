@@ -32,10 +32,7 @@ public class NettyEventLoopFactory {
     }
 
     private static boolean shouldEpoll() {
-        if (SystemPropertyUtil.getBoolean("netty.epoll.enable", false)) {
-            String osName = SystemPropertyUtil.get("os.name");
-            return osName.toLowerCase().contains("linux") && Epoll.isAvailable();
-        }
-        return false;
+        String osName = SystemPropertyUtil.get("os.name");
+        return osName.toLowerCase().contains("linux") && Epoll.isAvailable();
     }
 }

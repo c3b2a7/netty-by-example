@@ -30,4 +30,8 @@ public interface Endpoint {
     static Client connect(SocketAddress socketAddress) {
         return new NettyClient(socketAddress);
     }
+
+    static Server transparentProxy(SocketAddress socketAddress) {
+        return new ProxyServer(socketAddress);
+    }
 }
