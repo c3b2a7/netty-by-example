@@ -4,7 +4,6 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
-import io.netty.handler.codec.serialization.ClassResolver;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
@@ -14,7 +13,6 @@ import me.lolico.example.netty.NettyEventLoopFactory;
 import me.lolico.example.netty.handler.AbstractServerHandler;
 import me.lolico.example.netty.handler.WatchdogHandler;
 import me.lolico.example.netty.listener.ChannelGroupListener;
-import me.lolico.example.netty.listener.ReconnectionListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,12 +22,12 @@ public class NettyServer implements Server {
 
     private static final Logger log = LoggerFactory.getLogger(NettyServer.class);
 
-    private final SocketAddress socketAddress;
-    private ServerBootstrap bootstrap;
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
-    private ChannelGroup channels;
-    private Channel channel;
+    private Channel serverChannel;
+
+    private final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    private final SocketAddress socketAddress;
 
     public NettyServer(SocketAddress socketAddress) {
         this.socketAddress = socketAddress;
@@ -37,12 +35,9 @@ public class NettyServer implements Server {
 
     @Override
     public void open() throws Exception {
-        channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-        ClassResolver classResolver = ClassResolvers.softCachingResolver(null);
-        bootstrap = new ServerBootstrap();
         bossGroup = NettyEventLoopFactory.eventLoopGroup(1, "NettyServerBoss", false);
         workerGroup = NettyEventLoopFactory.eventLoopGroup(Runtime.getRuntime().availableProcessors() + 1, "NettyServerWorker", true);
-        bootstrap.group(bossGroup, workerGroup)
+        new ServerBootstrap().group(bossGroup, workerGroup)
                 .channel(NettyEventLoopFactory.serverSocketChannelClass())
                 .option(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
                 .childOption(ChannelOption.SO_KEEPALIVE, Boolean.TRUE)
@@ -52,29 +47,30 @@ public class NettyServer implements Server {
                     protected void initChannel(Channel ch) throws Exception {
                         ch.pipeline()
                                 .addLast(new IdleStateHandler(90, 0, 0))
-                                .addLast(new WatchdogHandler(ReconnectionListener.NO_OP))
+                                .addLast(new WatchdogHandler())
                                 .addLast(new ChannelGroupListener(channels))
-                                .addLast("decoder", new ObjectDecoder(classResolver))
+                                .addLast("decoder", new ObjectDecoder(ClassResolvers.softCachingResolver(null)))
                                 .addLast("encoder", new ObjectEncoder())
-                                .addLast("handler", new AbstractServerHandler(NettyServer.this) {
-                                });
+                                .addLast("handler", new AbstractServerHandler(NettyServer.this){});
                     }
-                });
-        ChannelFuture channelFuture = bootstrap.bind(socketAddress).syncUninterruptibly();
-        channelFuture.addListener(future -> {
-            if (future.isSuccess()) {
-                log.info("Server started at {} success!", socketAddress);
-            } else {
-                log.error("Server started at " + socketAddress + " failed!", future.cause());
-            }
-        });
-        channel = channelFuture.channel();
+                })
+                .bind(socketAddress)
+                .addListener((ChannelFuture future) -> {
+                    if (future.isSuccess()) {
+                        serverChannel = future.channel();
+                        log.info("Server started at {} success!", socketAddress);
+                    } else {
+                        close();
+                        log.error("Server started at " + socketAddress + " failed!", future.cause());
+                    }
+                })
+                .syncUninterruptibly();
     }
 
     @Override
     public void close() throws Exception {
-        if (channel != null) {
-            channel.close();
+        if (serverChannel != null) {
+            serverChannel.close();
         }
         channels.close();
         if (bossGroup != null) {
@@ -83,13 +79,14 @@ public class NettyServer implements Server {
         if (workerGroup != null) {
             workerGroup.shutdownGracefully();
         }
-        bootstrap = null;
     }
 
-    public Channel getChannel() {
-        return channel;
+    @Override
+    public Channel getServerChannel() {
+        return serverChannel;
     }
 
+    @Override
     public ChannelGroup getChannels() {
         return channels;
     }

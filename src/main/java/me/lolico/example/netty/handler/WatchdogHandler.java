@@ -27,6 +27,10 @@ public class WatchdogHandler extends ChannelInboundHandlerAdapter {
     private int attempts = 0;
     private final ReconnectionListener reconnectionListener;
 
+    public WatchdogHandler() {
+        this.reconnectionListener = ReconnectionListener.NO_OP;
+    }
+
     public WatchdogHandler(ReconnectionListener reconnectionListener) {
         this.reconnectionListener = reconnectionListener;
     }

@@ -5,7 +5,7 @@ import me.lolico.example.netty.transport.Server;
 
 public abstract class AbstractServerHandler extends ChannelInboundHandlerAdapter {
 
-    private final Server server;
+    protected final Server server;
 
     public AbstractServerHandler(Server server) {
         this.server = server;

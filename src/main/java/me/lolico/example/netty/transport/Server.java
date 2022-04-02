@@ -10,7 +10,14 @@ public interface Server extends Endpoint {
      *
      * @return channel
      */
-    Channel getChannel();
+    Channel getServerChannel();
+
+    /**
+     * Same as {@link Server#getServerChannel()}, do not override this method.
+     */
+    default Channel getChannel() {
+        return getServerChannel();
+    }
 
     /**
      * Get all channels connected to the current server

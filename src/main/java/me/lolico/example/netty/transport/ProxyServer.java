@@ -6,6 +6,8 @@ import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
+import io.netty.handler.logging.ByteBufFormat;
+import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import me.lolico.example.netty.NettyEventLoopFactory;
@@ -16,7 +18,6 @@ import java.net.SocketAddress;
 
 public class ProxyServer implements Server {
 
-    private ServerBootstrap serverBootstrap;
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
     private Channel serverChannel;
@@ -30,10 +31,9 @@ public class ProxyServer implements Server {
 
     @Override
     public void open() throws Exception {
-        serverBootstrap = new ServerBootstrap();
         bossGroup = NettyEventLoopFactory.eventLoopGroup(1, "NettyServerBoss", false);
         workerGroup = NettyEventLoopFactory.eventLoopGroup(Runtime.getRuntime().availableProcessors() + 1, "NettyServerWorker", false);
-        serverBootstrap.group(bossGroup, workerGroup)
+        new ServerBootstrap().group(bossGroup, workerGroup)
                 .channel(NettyEventLoopFactory.serverSocketChannelClass())
                 .option(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
                 .childOption(ChannelOption.TCP_NODELAY, Boolean.TRUE)
@@ -41,7 +41,7 @@ public class ProxyServer implements Server {
                     @Override
                     protected void initChannel(Channel ch) throws Exception {
                         ch.pipeline()
-                                .addLast(new LoggingHandler("LocalTunnel"))
+                                .addLast(new LoggingHandler("LocalTunnel", LogLevel.INFO, ByteBufFormat.SIMPLE))
                                 .addLast(new HttpServerCodec())
                                 .addLast(new HttpObjectAggregator(1024 * 1024))
                                 .addLast(new ChannelGroupListener(channels))
@@ -71,13 +71,14 @@ public class ProxyServer implements Server {
             workerGroup.shutdownGracefully();
         }
         channels.close();
-        serverBootstrap = null;
     }
 
-    public Channel getChannel() {
+    @Override
+    public Channel getServerChannel() {
         return serverChannel;
     }
 
+    @Override
     public ChannelGroup getChannels() {
         return channels;
     }
