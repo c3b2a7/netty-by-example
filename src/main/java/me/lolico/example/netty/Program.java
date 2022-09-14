@@ -1,6 +1,7 @@
 package me.lolico.example.netty;
 
 import me.lolico.example.netty.transport.Endpoint;
+import me.lolico.example.netty.transport.TransparentProxyServer;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -14,6 +15,7 @@ public class Program {
             case "-c", "--connect" -> Endpoint.connect(supplier.get());
             case "-b", "--bind" -> Endpoint.bind(supplier.get());
             case "-tp", "--transparentProxy" -> Endpoint.transparentProxy(supplier.get());
+            case "-us", "--upstream" -> new TransparentProxyServer(supplier.get(), new InetSocketAddress(args[3], Integer.parseInt(args[4])));
             default -> throw new IllegalStateException("Unexpected value: " + type);
         };
         endpoint.open();
