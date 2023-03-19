@@ -48,12 +48,18 @@ public abstract class Serials {
         return typeUrl;
     }
 
-
     private static class MessageTypeLookup {
 
-        protected static final Map<String, Class<?>> registry = new HashMap<>();
+        private static final Map<String, Class<?>> registry = new HashMap<>();
 
         public static void register(String type, Message message) {
+            Class<?> existType = lookup(type);
+            if (existType == message.getClass()) {
+                return;
+            }
+            if (existType != null) {
+                throw new IllegalStateException("conflict type: " + existType.getName() + " with same type url: " + type);
+            }
             registry.put(type, message.getClass());
         }
 
