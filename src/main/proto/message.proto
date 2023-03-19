@@ -1,9 +1,8 @@
 syntax = "proto3";
 
-option optimize_for = SPEED;
-option java_multiple_files = false;
+package proto;
 option java_package = "me.lolico.example.proto";
-option java_outer_classname = "MessageProto";
+option go_package = "github.com/c3b2a7/HelloGo/protobuf";
 
 message Request {
   enum Type {
@@ -24,4 +23,9 @@ message Response{
   int64 id = 1;
   Status status = 2;
   bytes data = 3;
+}
+
+service GreetService {
+  rpc Hello(Request) returns (Response) {}
+  rpc HelloStream(stream Request) returns (Response) {}
 }

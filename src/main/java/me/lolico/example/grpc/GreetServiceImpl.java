@@ -3,8 +3,8 @@ package me.lolico.example.grpc;
 import com.google.protobuf.ByteString;
 import io.grpc.stub.StreamObserver;
 import me.lolico.example.proto.GreetServiceGrpc;
-import me.lolico.example.proto.MessageProto.Request;
-import me.lolico.example.proto.MessageProto.Response;
+import me.lolico.example.proto.Message.Request;
+import me.lolico.example.proto.Message.Response;
 
 import java.nio.charset.StandardCharsets;
 
